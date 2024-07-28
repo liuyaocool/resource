@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>资源列表</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 10px;
+        background-color: #000000FF;
+    }
+    ul {
+        margin: 0;
+        font-size: 20px;
+    }
+</style>
+<body>
+    <ul id="data"></ul>
+<script>
+    let data = [];
+    fetch('fileList.txt').then(resp => {
+        if(resp.ok) resp.text().then(str => {
+            let sp = str.split('\n'), htmlStr = '';
+            sp.forEach(p => {
+                htmlStr += `<li><a href="${p}">${p.substring(2).replaceAll('/', ' / ')}</a></li>`
+            });
+            document.getElementById('data').innerHTML = htmlStr;
+        });
+    });
+</script>
+</body>
+</html>
