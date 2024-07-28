@@ -1,6 +1,6 @@
 body::after {
     content: ' ';
-    background: url(https://resource-8fp.pages.dev/img/party_parrot.gif);
+    background: url(../../img/party_parrot.gif);
     width: 28px;
     height: 28px;
     display: block;
