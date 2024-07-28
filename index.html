@@ -34,6 +34,7 @@
         if(resp.ok) resp.text().then(str => {
             let sp = str.split('\n'), htmlStr = '';
             sp.forEach(p => {
+                if (!p) return;
                 htmlStr += `<li><a href="${p}">${p.substring(2).replaceAll('/', ' / ')}</a></li>`
             });
             document.getElementById('data').innerHTML = htmlStr;
