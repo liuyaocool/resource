@@ -66,6 +66,8 @@
 ./font/en/TormentorRegular.otf
 ./font/en/TormentorRegular.ttf
 ./font/en/WildernessTypefaceRegular.ttf
+./font/fontcn.html
+./font/fonten.html
 ./font/other/termux_font.ttf
 ./img/background.gif
 ./img/giphy.gif

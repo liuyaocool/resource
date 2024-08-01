@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>中文字体示例</title>
+</head>
+<style>
+    html, body {
+        height: 100%;
+    }
+    body, body * {
+        box-sizing: border-box;
+        font-size: 36px;
+    }
+    textarea {
+        width: calc(100% - 20px);
+        resize: vertical;
+        height: 66px;
+    }
+    table {
+        width: 100%;
+    }
+    tr > td:nth-of-type(1) {
+        width: 326px;
+        text-align: right;
+        padding-right: 20px;
+    }
+</style>
+<body>
+    <table><tbody id="data"></tbody></table>
+<script>
+    const path = './font/cn/'
+    fetch('../fileList.txt').then(async resp => {
+        if(!resp.ok) return;
+        let sp = (await resp.text()).split('\n'), htmlStr = '';
+        sp.filter(line => line.startsWith(path)).forEach(line => {
+            if (!line) return;
+            let name = line.substring(line.lastIndexOf('/')+1, line.lastIndexOf('.')),
+                styStr = `style="font-family:${name};"`;
+            addStyle(name, line.replace('./font/', ''));
+            htmlStr += `<tr><td ${styStr}>${name}</td><td><textarea ${styStr}></textarea></td></tr>`;
+        });
+        document.getElementById('data').innerHTML = htmlStr;
+    });
+    function addStyle(name, link) {
+        var style = document.createElement('style');
+        style.appendChild(document.createTextNode(`
+            @font-face {
+                font-family: "${name}";
+                src: url('${link}') format('truetype');
+            }
+        `));        
+        document.head.appendChild(style);
+    }
+</script>
+</body>
+</html>
