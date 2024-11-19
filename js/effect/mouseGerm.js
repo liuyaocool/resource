@@ -50,6 +50,7 @@
             pp += p;
         }
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.classList.add('ly_grem');
         svg.setAttribute("viewBox", "0 0 100 100");
         svg.setAttribute("style", `pointer-events: none;width: 100%; height: 100%; position: fixed; height: 100px; width: 100px; transform: translate(-50%,-50%); left: ${mouseX}px; top: ${mouseY}px; z-index: 99`);
         svg.innerHTML = pp;
