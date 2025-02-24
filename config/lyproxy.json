@@ -2,10 +2,10 @@
     "global_proxy": "127.0.0.1:9091",
     "special_proxy": {
         "127.0.0.1:9092": [
-            "openai.com"
+            "61linux.com"
         ],
         "127.0.0.1:9093": [
-            "chatgpt.com"
+            "liuyao.link"
         ]
     },
     "exclude_equals": [
