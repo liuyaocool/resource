@@ -94,8 +94,7 @@ function isFunc(f) {
 }
 
 function isMobile() {
-    let userAgent = navigator.userAgent;
-    return userAgent.indexOf("Android") > -1 || userAgent.indexOf("iPhone") > -1;
+    return /Mobi/.test(navigator.userAgent);
 }
 
 function isMac() {
