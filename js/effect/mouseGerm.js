@@ -1,7 +1,3 @@
-/**
- * define to set color offset 50
- * `const ly_germ_color_offset = 50`
- */
 (function(color_range) {
     if (!checkColorRange()) {
         color_range = [[0, 0], [130, 255], [0, 150]];
@@ -91,4 +87,4 @@
     // document.addEventListener("mousemove", (event) => {germ(event)});
     document.addEventListener("touchmove", (event) => germ(event));
     document.addEventListener("pointermove", (e) => germAdd(e.clientX, e.clientY));
-})(typeof ly_germ_color_offset !== 'undefined' ? ly_germ_color_offset : null)
+})(typeof ly_germ_color !== 'undefined' ? ly_germ_color : null)
