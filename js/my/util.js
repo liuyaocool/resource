@@ -130,6 +130,14 @@ function nowStr(hasTime) {
 }
 
 function copyToClipboard(str) {
+    // 现代浏览器
+    navigator.clipboard.writeText(text).catch(() => {
+        copyToClipboardOld(str);
+    });
+    // navigator.clipboard.write([new ClipboardItem({ "text/plain": new Blob(["mingzi哈哈哈哈"], { type: "text/plain" }) })]);
+}
+
+function copyToClipboardOld(str) {
     let dom = document.getElementById("lyCopyContainer");
     if (!dom) {
         let textDom = document.createElement('textarea');
