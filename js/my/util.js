@@ -162,3 +162,17 @@ function fileGetText(getFunc) {
         }
     });
 }
+
+function urlBase64Encode(str) {
+    return btoa(str)
+        .replaceAll('+', '-')
+        .replaceAll('/', '_')
+        .replaceAll('=', '@');
+}
+
+function urlBase64Decode(str) {
+    return atob(str
+        .replaceAll('-', '+')
+        .replaceAll('_', '/')
+        .replaceAll('@', '='));
+}
