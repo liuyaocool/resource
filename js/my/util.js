@@ -129,10 +129,10 @@ function nowStr(hasTime) {
     return `${now.getFullYear()}-${m}-${d}${hasTime ? ` ${h}:${mi}:${s}` : ' 00:00:00'}`;
 }
 
-function copyToClipboard(str) {
+function copyToClipboard(text) {
     // 现代浏览器
     navigator.clipboard.writeText(text).catch(() => {
-        copyToClipboardOld(str);
+        copyToClipboardOld(text);
     });
     // navigator.clipboard.write([new ClipboardItem({ "text/plain": new Blob(["mingzi哈哈哈哈"], { type: "text/plain" }) })]);
 }
