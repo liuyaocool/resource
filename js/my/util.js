@@ -1,11 +1,14 @@
 
 // 指定长度
 function uuid(len) {
-    let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     let radix = chars.length, uuid = '', i;
-    len = len > 0 ? len : 36;
-    for (i = 0; i < len; i++) uuid += chars[0 | Math.random() * radix];
+    len = len > 0 ? len : 32;
+    for (i = 0; i < len; i++) uuid += chars.charAt(0 | Math.random() * radix);
     return uuid;
+}
+function uuid2() {
+    return crypto.randomUUID().replaceAll('-', '');
 }
 
 /**
