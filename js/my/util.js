@@ -60,7 +60,7 @@ function doHttp(option) {
     }
 }
 
-async function fetchTextFile(path, success) {
+async function fetchTextFile(path) {
     let resp = await fetch(path);
     return await resp.text();
 }
