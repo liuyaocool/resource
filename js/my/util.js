@@ -60,6 +60,12 @@ function doHttp(option) {
     }
 }
 
+function fetchTextFile(path, success) {
+    fetch(path).then(resp => {
+        if(resp.ok) resp.text().then(str => success(str));
+    }).catch(e => console.error(e));
+}
+
 function fileChooser(accept, getFileFunc) {
     if (!isFunc(getFileFunc)) return;
     let fileInput = document.createElement('input');
