@@ -60,10 +60,9 @@ function doHttp(option) {
     }
 }
 
-function fetchTextFile(path, success) {
-    fetch(path).then(resp => {
-        if(resp.ok) resp.text().then(str => success(str));
-    }).catch(e => console.error(e));
+async function fetchTextFile(path, success) {
+    let resp = await fetch(path);
+    return await resp.text();
 }
 
 function fileChooser(accept, getFileFunc) {
