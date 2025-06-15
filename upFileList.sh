@@ -6,4 +6,5 @@ find ./ \( \
 	-o -path ./upFileList.sh \
 	-o -path ./fileList.txt \
 	-o -path ./index.html \
+	-o -path ./.gitignore \
 \) -prune -o -type f -print | sort -k 1 > fileList.txt
