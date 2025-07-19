@@ -14,50 +14,49 @@ function uuid2() {
 /**
  * send http
  * @param option
- *  {
+ * @demo: doHttp(url, {
  *      method: 'post',
- *      url: '',
  *      headers: {
- *          'Content-Type', 'application/json'
+ *          "Content-Type", 'application/json'
  *      },
  *      body: '',
  *      async: true,
  *      progress: function(ev) { // 上传进度
  *      },
- *      success: function(res) {
- *      },
- *      error: function(res) {
- *      },
- *  }
+ *  }).then(function(res) {
+ *  
+ *  }).catch(function(res) {
+ *  })
  */
-function doHttp(option) {
-    option = option ? option : {};
-    let http = new XMLHttpRequest();
-    http.open(option.method ? option.method : "post", option.url,
-        false === option.async ? false : true);
-    if (option.headers && (typeof option.headers == "object")) {
-        for (let headerName in option.headers) {
-            http.setRequestHeader(headerName, option.headers[headerName]);
-        }
-    }
-    if (http.upload) {
-        http.upload.addEventListener('progress' , function (ev) {
-            if (option.progress) {
-                option.progress(ev);
+function doHttp(url, option) {
+    return new Promise((resolve, reject) => {
+        option = option ? option : {};
+        let http = new XMLHttpRequest();
+        http.open(
+            option.method ? option.method : "post", 
+            url,
+            false === option.async ? false : true
+        );
+        if (option.headers && (typeof option.headers == "object")) {
+            for (let headerName in option.headers) {
+                http.setRequestHeader(headerName, option.headers[headerName]);
             }
-        }, false);
-    }
-    http.send(option.body ? option.body : null);
-    http.onreadystatechange = function (res) {
-        if (4 != res.target.readyState) {
-            return;
         }
-        if (200 == res.target.status && isFunc(option.success)) {
-            option.success(res.target.response);
-        } else if (isFunc(option.error)) {
-            option.error(res.target.response);
+        if (isFunc(option.progress) && http.upload) {
+            http.upload.addEventListener('progress' , option.progress, false);
         }
-    }
+        http.send(option.body ? option.body : null);
+        http.onreadystatechange = function (res) {
+            if (4 != res.target.readyState) {
+                return;
+            }
+            if (200 == res.target.status) {
+                resolve(res.target.response);
+            } else {
+                reject(res.target.response);
+            }
+        }
+    });
 }
 
 async function fetchTextFile(path) {
