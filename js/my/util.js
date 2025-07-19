@@ -65,27 +65,28 @@ async function fetchTextFile(path) {
     return await resp.text();
 }
 
-function fileChooser(accept, getFileFunc) {
-    if (!isFunc(getFileFunc)) return;
-    let fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    if (accept) {
-        fileInput.accept = accept;
-    }
-    fileInput.onchange = function (ev) {
-        let file = ev.target.files[0];
-        if (isFunc(getFileFunc)) getFileFunc(file);
-    }
-    fileInput.click();
+function fileChooser(accept = null) {
+    return new Promise((resolve, reject) => {
+        let fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        if (accept) {
+            fileInput.accept = accept;
+        }
+        fileInput.onchange = function (ev) {
+            resolve(ev.target.files[0]);
+        }
+        fileInput.click();
+    })
 }
 
-function getFilePath(file, getPathFunc) {
-    if (!isFunc(getPathFunc)) return;
-    let reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function (e) {
-        getPathFunc(this.result);
-    }
+function getFilePath(file) {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (e) {
+            resolve(e.target.result);
+        }
+    })
 }
 
 // a little slow than getFilePath when loading
@@ -107,6 +108,11 @@ function isMobile() {
 
 function isMac() {
     return navigator.userAgent.indexOf("Mac") >= 0;
+}
+
+function isMobileOld() {
+    let userAgent = navigator.userAgent;
+    return userAgent.indexOf("Android") > -1 || userAgent.indexOf("iPhone") > -1;
 }
 
 /**
@@ -161,14 +167,16 @@ function copyToClipboardOld(str) {
     document.execCommand('copy');
 }
 
-function fileGetText(getFunc) {
-    fileChooser(null, function (file) {
-        let rd = new FileReader();
-        rd.readAsText(file, "UTF-8");
-        rd.onload = function (e) {
-            getFunc(e.target.result);
-        }
-    });
+function fileGetText() {
+    return new Promise((resolve, reject) => {
+        fileChooser().then(file => {
+            let rd = new FileReader();
+            rd.readAsText(file, "UTF-8");
+            rd.onload = function (e) {
+                resolve(e.target.result);
+            }
+        });
+    })
 }
 
 function urlBase64Encode(str) {
