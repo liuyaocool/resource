@@ -14,12 +14,11 @@ function uuid2() {
 /**
  * send http
  * @param option
- * @demo: doHttp(url, {
+ * @demo: fileUpload(url, formData, {
  *      method: 'post',
  *      headers: {
  *          "Content-Type", 'application/json'
  *      },
- *      body: '',
  *      async: true,
  *      progress: function(ev) { // 上传进度
  *      },
@@ -28,12 +27,11 @@ function uuid2() {
  *  }).catch(function(res) {
  *  })
  */
-function doHttp(url, option) {
+function fileUpload(url, formData, option = {}) {
     return new Promise((resolve, reject) => {
-        option = option ? option : {};
         let http = new XMLHttpRequest();
         http.open(
-            option.method ? option.method : "post", 
+            option.method || "post", 
             url,
             false === option.async ? false : true
         );
@@ -45,7 +43,7 @@ function doHttp(url, option) {
         if (isFunc(option.progress) && http.upload) {
             http.upload.addEventListener('progress' , option.progress, false);
         }
-        http.send(option.body ? option.body : null);
+        http.send(formData);
         http.onreadystatechange = function (res) {
             if (4 != res.target.readyState) {
                 return;
@@ -78,7 +76,7 @@ function fileChooser(accept = null) {
     })
 }
 
-function getFilePath(file) {
+function fileGetPath(file) {
     return new Promise((resolve, reject) => {
         let reader = new FileReader();
         reader.readAsDataURL(file);
@@ -169,13 +167,24 @@ function copyToClipboardOld(str) {
 function fileGetText() {
     return new Promise((resolve, reject) => {
         fileChooser().then(file => {
-            let rd = new FileReader();
-            rd.readAsText(file, "UTF-8");
-            rd.onload = function (e) {
-                resolve(e.target.result);
-            }
+            getTextFromFile(file).then(text => resolve(text)).catch(err => reject(err));
         });
     })
+}
+
+function getTextFromFile(file) {
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            resolve("");
+            return;
+        }
+        let rd = new FileReader();
+        rd.onload = e => {
+            resolve(e.target.result);
+        }
+        rd.onerror = err => reject(err);
+        rd.readAsText(file, "UTF-8");
+    });
 }
 
 function urlBase64Encode(str) {
