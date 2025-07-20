@@ -62,15 +62,18 @@ async function fetchTextFile(path) {
     return await resp.text();
 }
 
-function fileChooser(accept = null) {
+function fileChooser(accept = null, multiple = false) {
     return new Promise((resolve, reject) => {
         let fileInput = document.createElement('input');
+        if (multiple === true) {
+            fileInput.multiple = true;
+        }
         fileInput.type = 'file';
         if (accept) {
             fileInput.accept = accept;
         }
         fileInput.onchange = function (ev) {
-            resolve(ev.target.files[0]);
+            resolve(multiple === true ? ev.target.files : ev.target.files[0]);
         }
         fileInput.click();
     })
