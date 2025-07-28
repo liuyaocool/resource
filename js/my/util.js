@@ -203,3 +203,10 @@ function urlBase64Decode(str) {
         .replaceAll('_', '/')
         .replaceAll('@', '='));
 }
+
+function includeCss(pcLink, h5Link) {
+    let dom = document.createElement('link');
+    dom.rel = 'stylesheet';
+    dom.href = isMobile() ? h5Link : pcLink;
+    document.head.appendChild(dom);
+};
