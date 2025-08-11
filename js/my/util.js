@@ -8,7 +8,11 @@ function uuid(len) {
     return uuid;
 }
 function uuid2() {
-    return crypto.randomUUID().replaceAll('-', '');
+    // 不好用 内网环境没这个函数
+    if (crypto && crypto.randomUUID) {
+        return crypto.randomUUID().replaceAll('-', '');
+    }
+    return uuid();
 }
 
 /**
