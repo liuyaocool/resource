@@ -3,6 +3,7 @@
 ./file/360P2/360POP-P2-DEBUG-V1.0.42.42668.bin
 ./file/360P2/360POP-P2-V1.0.25.36330.bin
 ./file/360P2/breed-mt7628-hiwifi-hc5661a.bin
+./file/360P2/luci-theme-argon_2.3.2-r20250207_all.ipk
 ./file/360P2/openwrt-24.10.2-ramips-mt76x8-mediatek_mt7628an-eval-board-squashfs-sysupgrade.bin
 ./file/360P2/puttytel.exe
 ./file/kmspico.exe
