@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -21,37 +22,60 @@
         width: 100%;
     }
     tr > td:nth-of-type(1) {
-        width: 326px;
+        white-space: nowrap;
         text-align: right;
         padding-right: 20px;
     }
 </style>
 <body>
-    <table><tbody id="data"></tbody></table>
+    <div id="app">
+        <table><tbody>
+            <tr v-for="(row, i) in fonts">
+                <td :style="{'font-family': row[0]}">{{row[0]}}</td>
+                <td><textarea v-model="text" :style="{'font-family': row[0]}"></textarea></td>
+            </tr>
+        </tbody></table>
+    </div>
+
+    <script src="../js/my/util.js"></script>
+    <script src="../js/vue/vue3.global.js"></script>
 <script>
-    const path = './font/cn/'
-    fetch('../fileList.txt').then(async resp => {
-        if(!resp.ok) return;
-        let sp = (await resp.text()).split('\n'), htmlStr = '';
-        sp.filter(line => line.startsWith(path)).forEach(line => {
-            if (!line) return;
-            let name = line.substring(line.lastIndexOf('/')+1, line.lastIndexOf('.')),
-                styStr = `style="font-family:${name};"`;
-            addStyle(name, line.replace('./font/', ''));
-            htmlStr += `<tr><td ${styStr}>${name}</td><td><textarea ${styStr}></textarea></td></tr>`;
-        });
-        document.getElementById('data').innerHTML = htmlStr;
-    });
-    function addStyle(name, link) {
-        var style = document.createElement('style');
-        style.appendChild(document.createTextNode(`
-            @font-face {
-                font-family: "${name}";
-                src: url('${link}') format('truetype');
+    const vm = Vue.createApp({
+        data() {
+            return {
+                text: '',
+                fonts: [], // [[font name]]
             }
-        `));        
-        document.head.appendChild(style);
-    }
+        },
+        async created() {
+            let type = location.search ? location.search.substr(1) : 'cn';
+                path = `./font/${type}/`,
+                pageInfo ={
+                    // [title, default text]
+                    en: ['英文字体示例', 'abcdefghijklmnopqrstuvwxyz'],
+                    cn: ['中文字体示例', ''],
+                    other: ['其他字体示例', 'abcdefghijklmnopqrstuvwxyz'],
+                };
+            document.title = pageInfo[type][0];
+            this.text = pageInfo[type][1];
+
+            let fileText = await fetchTextFile('../fileList.txt');
+            let style = document.createElement('style');
+            fileText.split('\n').filter(line => line && line.startsWith(path)).forEach(line => {
+                let name = line.substring(line.lastIndexOf('/')+1, line.lastIndexOf('.'));
+                let link = line.replace('./font/', '');
+                this.fonts.push([name]);
+                style.appendChild(document.createTextNode(`
+                    @font-face {
+                        font-family: "${name}";
+                        src: url('${link}') format('truetype');
+                    }
+                `));        
+            });
+            document.head.appendChild(style);
+        },
+        methods: {}
+    }).mount("#app");
 </script>
 </body>
 </html>
