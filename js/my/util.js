@@ -175,12 +175,9 @@ function copyToClipboardOld(str) {
     document.execCommand('copy');
 }
 
-function fileGetText() {
-    return new Promise((resolve, reject) => {
-        fileChooser().then(file => {
-            getTextFromFile(file).then(text => resolve(text)).catch(err => reject(err));
-        });
-    })
+async function fileGetText() {
+    let file = await fileChooser();
+    return await getTextFromFile(file);
 }
 
 function getTextFromFile(file) {
@@ -190,10 +187,8 @@ function getTextFromFile(file) {
             return;
         }
         let rd = new FileReader();
-        rd.onload = e => {
-            resolve(e.target.result);
-        }
-        rd.onerror = err => reject(err);
+        rd.onload = e => resolve(e.target.result);
+        rd.onerror = reject;
         rd.readAsText(file, "UTF-8");
     });
 }
