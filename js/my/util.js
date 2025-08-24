@@ -213,3 +213,109 @@ function includeCss(pcLink, h5Link) {
     dom.href = isMobile() ? h5Link : pcLink;
     document.head.appendChild(dom);
 };
+
+/**
+ * 添加页面离开等监听器
+ * @param {*} listener 监听函数
+ * @param {*} sign 鼠标点击 排除的dom元素参数标记 
+ *      如<spen esc-exclude></span> 当点击的元素或父元素遇到esc-exclude标记的时候 不执行函数
+ *      如果是嵌套 可用 let doms = []; doms.pop().close();
+ */
+function addEscListener(listener, sign = 'esc-ex') {
+    if (typeof listener !== 'function')
+        return;
+    document.addEventListener('visibilitychange', (e) => {
+        if (document.visibilityState === 'hidden') listener(e);
+    });
+    window.addEventListener('blur', listener);
+    window.addEventListener('click', e => {
+        let parent = e.target;
+        do {
+            if (parent.hasAttribute(sign)) return;
+        } while(parent = parent.parentElement)
+        listener(e);
+    });
+}
+
+class HightlightAnd {
+    ruleFunc = null;
+    wordMap = null;
+    mainWord = null;
+    // static aaa = null;
+
+    /**
+     * && 高亮
+     * @param {*} rulrFunc 替换规则函数 (k) => { return `xxx${k}xxx`; } 参数单个k， 返回字符串
+     * @returns 
+     */
+    constructor(ruleFunc) {
+        if (typeof ruleFunc != 'function' || typeof ruleFunc('a') != 'string') {
+            throw new Error('ruleFunc is not a function like: e => return "string"');
+        }
+        this.ruleFunc = ruleFunc;
+    }
+    /**
+     * && 高亮
+     * @param {*} keyWord 搜索词
+     * @param {*} splitStr 分割符
+     * @returns 
+     */
+    setKeyword(keyWord, splitStr = ' ') {
+        if (!keyWord || !keyWord.trim()) {
+            throw new Error('keyWord is invalid');
+        }
+        let wordMap = new Map();
+        // filter会直接返回Array数组， 然后forEach再遍历一遍， 并不是forEach遍历过程中调用filter
+        keyWord.split(splitStr).forEach(k => {
+            if (!k || wordMap.has(k = k.toLowerCase()))
+                return;
+            for (const [hasK, hasV] of wordMap) {
+                if (hasK.indexOf(k) >= 0) {
+                    return;
+                } else if(k.indexOf(hasK) >= 0) {
+                    wordMap.delete(hasK);
+                }
+            }
+            wordMap.set(k, this.ruleFunc(k));
+        });
+        for (const [hasK, hasV] of wordMap) {
+            this.mainWord = hasK;
+            break;
+        }
+        this.wordMap = wordMap;
+        return this;
+    }
+    highlight(str) {
+        if (!str || !(str = str.trim()))
+            return null;
+        let range = [], // [1,1,,,1,1,1,1,,,,,,,1,1,] 将范围点亮
+            result, i, idx = 0, strLow = str.toLowerCase();
+        for (let [k, v] of this.wordMap) {
+            result = false;
+            while ((idx = strLow.indexOf(k, idx)) >= 0) {
+                result = true;
+                for (i = 0; i < k.length; i++)
+                    range[idx + i] = true;
+                idx += k.length;
+            }
+            if (!result) return null;
+        }
+        result = '';
+        strLow = ''; // 高亮词
+        for (i = 0; i < str.length; i++) {
+            if (range[i]) {
+                strLow += str[i];
+            } else {
+                if (strLow) {
+                    result += this.ruleFunc(strLow);                    
+                }
+                result += str[i];
+                strLow = '';
+            }
+        }
+        if (strLow) {
+            result += this.ruleFunc(strLow);                    
+        }
+        return result;
+    }
+}
