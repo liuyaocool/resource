@@ -241,7 +241,7 @@ const HightlightAnd = (function() {
     let _ruleFunc = null;
     let _wordMap = null;
     let _mainWord = null;
-    class HightlightAnd {
+    class Main {
         // static aaa = null;
         /**
          * && 高亮
@@ -259,7 +259,7 @@ const HightlightAnd = (function() {
                 configurable: false
             });
             Object.defineProperty(this, 'getWordCont', {
-                value: () => _wordMap.size,
+                value: () => _wordMap ? _wordMap.size : 0,
                 writable: false,
                 configurable: false
             });
@@ -332,5 +332,5 @@ const HightlightAnd = (function() {
             return result;
         }
     }
-    return HightlightAnd;
+    return Main;
 })()
