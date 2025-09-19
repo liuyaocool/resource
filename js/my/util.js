@@ -237,85 +237,98 @@ function addEscListener(listener, sign = 'esc-ex') {
     });
 }
 
-class HightlightAnd {
-    ruleFunc = null;
-    wordMap = null;
-    mainWord = null;
-    // static aaa = null;
-
-    /**
-     * && 高亮
-     * @param {*} rulrFunc 替换规则函数 (k) => { return `xxx${k}xxx`; } 参数单个k， 返回字符串
-     * @returns 
-     */
-    constructor(ruleFunc) {
-        if (typeof ruleFunc != 'function' || typeof ruleFunc('a') != 'string') {
-            throw new Error('ruleFunc is not a function like: e => return "string"');
+const HightlightAnd = (function() {
+    let _ruleFunc = null;
+    let _wordMap = null;
+    let _mainWord = null;
+    class HightlightAnd {
+        // static aaa = null;
+        /**
+         * && 高亮
+         * @param {*} rulrFunc 替换规则函数 (k) => { return `xxx${k}xxx`; } 参数单个k， 返回字符串
+         * @returns 
+         */
+        constructor(ruleFunc) {
+            if (typeof ruleFunc != 'function' || typeof ruleFunc('a') != 'string') {
+                throw new Error('ruleFunc is not a function like: e => return "string"');
+            }
+            _ruleFunc = ruleFunc;
+            Object.defineProperty(this, 'getMainWord', {
+                value: () => _mainWord,
+                writable: false,
+                configurable: false
+            });
+            Object.defineProperty(this, 'getWordLength', {
+                value: () => _wordMap.size,
+                writable: false,
+                configurable: false
+            });
+            Object.freeze(this);
         }
-        this.ruleFunc = ruleFunc;
-    }
-    /**
-     * && 高亮
-     * @param {*} keyWord 搜索词
-     * @param {*} splitStr 分割符
-     * @returns 
-     */
-    setKeyword(keyWord, splitStr = ' ') {
-        if (!keyWord || !keyWord.trim()) {
-            throw new Error('keyWord is invalid');
-        }
-        let wordMap = new Map();
-        // filter会直接返回Array数组， 然后forEach再遍历一遍， 并不是forEach遍历过程中调用filter
-        keyWord.split(splitStr).forEach(k => {
-            if (!k || wordMap.has(k = k.toLowerCase()))
-                return;
-            for (const [hasK, hasV] of wordMap) {
-                if (hasK.indexOf(k) >= 0) {
+        /**
+         * && 高亮
+         * @param {*} keyWord 搜索词
+         * @param {*} splitStr 分割符
+         * @returns 
+         */
+        setKeyword(keyWord, splitStr = ' ') {
+            if (!keyWord || !keyWord.trim()) {
+                throw new Error('keyWord is invalid');
+            }
+            let wordMap = new Map();
+            // filter会直接返回Array数组， 然后forEach再遍历一遍， 并不是forEach遍历过程中调用filter
+            keyWord.split(splitStr).forEach(k => {
+                if (!k || wordMap.has(k = k.toLowerCase()))
                     return;
-                } else if(k.indexOf(hasK) >= 0) {
-                    wordMap.delete(hasK);
+                for (const [hasK, hasV] of wordMap) {
+                    if (hasK.indexOf(k) >= 0) {
+                        return;
+                    } else if(k.indexOf(hasK) >= 0) {
+                        wordMap.delete(hasK);
+                    }
+                }
+                wordMap.set(k, _ruleFunc(k));
+            });
+            for (const [hasK, hasV] of wordMap) {
+                _mainWord = hasK;
+                break;
+            }
+            _wordMap = wordMap;
+            return this;
+        }
+        highlight(str) {
+            if (!str || !(str = str.trim()))
+                return null;
+            let range = [], // [1,1,,,1,1,1,1,,,,,,,1,1,] 将范围点亮
+                result, i, idx = 0, strLow = str.toLowerCase();
+            for (let [k, v] of _wordMap) {
+                result = false;
+                while ((idx = strLow.indexOf(k, idx)) >= 0) {
+                    result = true;
+                    for (i = 0; i < k.length; i++)
+                        range[idx + i] = true;
+                    idx += k.length;
+                }
+                if (!result) return null;
+            }
+            result = '';
+            strLow = ''; // 高亮词
+            for (i = 0; i < str.length; i++) {
+                if (range[i]) {
+                    strLow += str[i];
+                } else {
+                    if (strLow) {
+                        result += _ruleFunc(strLow);
+                    }
+                    result += str[i];
+                    strLow = '';
                 }
             }
-            wordMap.set(k, this.ruleFunc(k));
-        });
-        for (const [hasK, hasV] of wordMap) {
-            this.mainWord = hasK;
-            break;
-        }
-        this.wordMap = wordMap;
-        return this;
-    }
-    highlight(str) {
-        if (!str || !(str = str.trim()))
-            return null;
-        let range = [], // [1,1,,,1,1,1,1,,,,,,,1,1,] 将范围点亮
-            result, i, idx = 0, strLow = str.toLowerCase();
-        for (let [k, v] of this.wordMap) {
-            result = false;
-            while ((idx = strLow.indexOf(k, idx)) >= 0) {
-                result = true;
-                for (i = 0; i < k.length; i++)
-                    range[idx + i] = true;
-                idx += k.length;
+            if (strLow) {
+                result += _ruleFunc(strLow);
             }
-            if (!result) return null;
+            return result;
         }
-        result = '';
-        strLow = ''; // 高亮词
-        for (i = 0; i < str.length; i++) {
-            if (range[i]) {
-                strLow += str[i];
-            } else {
-                if (strLow) {
-                    result += this.ruleFunc(strLow);                    
-                }
-                result += str[i];
-                strLow = '';
-            }
-        }
-        if (strLow) {
-            result += this.ruleFunc(strLow);                    
-        }
-        return result;
     }
-}
+    return HightlightAnd;
+})()
