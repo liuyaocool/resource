@@ -258,7 +258,7 @@ const HightlightAnd = (function() {
                 writable: false,
                 configurable: false
             });
-            Object.defineProperty(this, 'getWordLength', {
+            Object.defineProperty(this, 'getWordCont', {
                 value: () => _wordMap.size,
                 writable: false,
                 configurable: false
@@ -273,7 +273,9 @@ const HightlightAnd = (function() {
          */
         setKeyword(keyWord, splitStr = ' ') {
             if (!keyWord || !keyWord.trim()) {
-                throw new Error('keyWord is invalid');
+                _wordMap = new Map();
+                console.error('keyWord is invalid');
+                return this;
             }
             let wordMap = new Map();
             // filter会直接返回Array数组， 然后forEach再遍历一遍， 并不是forEach遍历过程中调用filter
